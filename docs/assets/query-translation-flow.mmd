@@ -1,0 +1,64 @@
+%%{init: {'theme':'dark', 'themeVariables': {'primaryBgColor':'#1a1a1a', 'primaryTextColor':'#ffffff', 'primaryBorderColor':'#d2691e', 'lineColor':'#d2691e', 'fontSize':'14px'}}}%%
+
+flowchart TD
+    subgraph UserInput["📝 User Input"]
+        QUERY["User Query:<br/>'What's the total contract<br/>value by region?'"]
+    end
+
+    subgraph Artifacts["📦 Pre-Generated Artifacts"]
+        CANONICAL["Canonical Schema<br/>(FIBO-grounded)<br/>────────────────<br/>contract:<br/>  id: unique identifier<br/>  customer: customer name<br/>  total_value: lifetime value<br/>  region: geographic region<br/>  ontology: fibo:Contract"]
+        
+        MAPPING_A["Client A Mapping<br/>(data/mappings/client_a.yaml)<br/>────────────────<br/>total_value:<br/>  type: direct<br/>  source: contracts.contract_value<br/>  ontology: fibo:hasContractValue<br/>region:<br/>  type: direct<br/>  source: contracts.region"]
+        
+        CLIENT_SCHEMA["Client A Schema<br/>(app/models/schemas.py)<br/>────────────────<br/>Table: contracts<br/>  contract_id: INTEGER<br/>  customer_name: VARCHAR<br/>  contract_value: DECIMAL<br/>  region: VARCHAR<br/>  status: VARCHAR"]
+    end
+
+    subgraph Mapper["🔧 Schema Mapper Service"]
+        BUILD_PROMPT["Build LLM Prompt<br/>────────────────<br/>Combines:<br/>• User question<br/>• Canonical schema<br/>• Client schema<br/>• Semantic context"]
+    end
+
+    subgraph LLMPrompt["💬 LLM Prompt (Constructed)"]
+        PROMPT["System: You are a database schema expert<br/>────────────────<br/>User Question: What's the total contract value by region?<br/><br/>Canonical Schema:<br/>  contract:<br/>    total_value: full lifetime value<br/>    region: geographic region<br/><br/>Customer Schema (Client A):<br/>  contracts:<br/>    contract_value: DECIMAL<br/>    region: VARCHAR<br/><br/>Semantic Context: E-commerce company,<br/>contract_value is lifetime value<br/><br/>Task: Generate SQL query for customer's schema"]
+    end
+
+    subgraph LLM["🤖 Azure OpenAI LLM"]
+        PROCESSING["GPT-4 Processing<br/>────────────────<br/>• Analyze user intent<br/>• Map canonical → client<br/>• Generate SQL syntax<br/>• Add explanations"]
+    end
+
+    subgraph LLMResponse["📤 LLM Response (JSON)"]
+        RESPONSE["{<br/>  'sql_query':<br/>    'SELECT region,<br/>     SUM(contract_value) as total_value<br/>     FROM contracts<br/>     GROUP BY region',<br/>  'mappings': {<br/>    'total_value': 'contract_value',<br/>    'region': 'region'<br/>  },<br/>  'calculations': {},<br/>  'explanation':<br/>    'Aggregating contract values by region<br/>     using direct field mappings'<br/>}"]
+    end
+
+    subgraph Execution["⚡ Query Execution"]
+        SQL_VALIDATOR["SQL Validator<br/>────────────────<br/>• Check for dangerous ops<br/>• Validate syntax<br/>• Sanitize query"]
+        
+        EXECUTOR["Query Executor<br/>────────────────<br/>• Connect to SQLite DB<br/>• Execute SQL<br/>• Return results"]
+        
+        RESULTS["Results:<br/>────────────────<br/>[<br/>  {region: 'North America',<br/>   total_value: 4250000},<br/>  {region: 'Europe',<br/>   total_value: 3100000},<br/>  {region: 'Asia Pacific',<br/>   total_value: 2890000}<br/>]"]
+    end
+
+    %% Flow connections
+    QUERY --> BUILD_PROMPT
+    CANONICAL --> BUILD_PROMPT
+    CLIENT_SCHEMA --> BUILD_PROMPT
+    MAPPING_A -.->|"Referenced in<br/>semantic context"| BUILD_PROMPT
+    
+    BUILD_PROMPT --> PROMPT
+    PROMPT --> PROCESSING
+    PROCESSING --> RESPONSE
+    
+    RESPONSE --> SQL_VALIDATOR
+    SQL_VALIDATOR -->|"Valid SQL"| EXECUTOR
+    EXECUTOR --> RESULTS
+
+    %% Styling
+    classDef userStyle fill:#2d5016,stroke:#4a8b2c,stroke-width:3px,color:#fff
+    classDef artifactStyle fill:#1a3a52,stroke:#3a7ca5,stroke-width:2px,color:#fff
+    classDef llmStyle fill:#4a2c5e,stroke:#8b5a9e,stroke-width:3px,color:#fff
+    classDef execStyle fill:#5e2c2c,stroke:#c55a5a,stroke-width:2px,color:#fff
+    
+    class QUERY userStyle
+    class CANONICAL,MAPPING_A,CLIENT_SCHEMA artifactStyle
+    class BUILD_PROMPT,PROMPT,PROCESSING,RESPONSE llmStyle
+    class SQL_VALIDATOR,EXECUTOR,RESULTS execStyle
+

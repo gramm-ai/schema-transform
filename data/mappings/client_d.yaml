@@ -1,0 +1,285 @@
+# Schema Mapping: client_d → Canonical
+# Auto-generated with LLM assistance
+# Generated: 20251106_103255
+# Last updated: 2025-11-06
+
+metadata:
+  client_id: client_d
+  database: data/databases/client_d.db
+  description: Auto-generated mapping for client_d
+  schema_complexity: high
+  last_validated: '2025-11-06'
+canonical_mappings:
+  contract:
+    id:
+      source: vendor_contracts.contract_num
+      type: direct
+      formula: null
+      source_fields:
+      - vendor_contracts.contract_num
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The canonical contract identifier maps directly to vendor_contracts.contract_num,
+        which uniquely identifies each contract.
+    name:
+      source: vendor_contracts.contract_num
+      type: direct
+      formula: null
+      source_fields:
+      - vendor_contracts.contract_num
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The schema does not include a separate contract name field; the contract_num
+        serves as the unique identifier and best available representation of the contract
+        name.
+    contract_number:
+      source: vendor_contracts.contract_num
+      type: direct
+      formula: null
+      source_fields:
+      - vendor_contracts.contract_num
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The canonical contract_number maps directly to vendor_contracts.contract_num,
+        which stores the human-readable contract identifier.
+    customer:
+      source: vendors.vendor_name
+      type: join
+      formula: null
+      source_fields:
+      - vendors.vendor_name
+      requires_join:
+      - vendors
+      filter: null
+      value_mapping: null
+      note: The contract's legal counterparty is the vendor; vendor_name identifies
+        the customer entity linked via vendor_contracts.vendor_id.
+    customer_id:
+      source: null
+      type: unavailable
+      formula: null
+      source_fields: null
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The schema models vendors and contracts but has no customer-related table
+        or identifier; therefore, customer_id cannot be mapped.
+    total_value:
+      source: null
+      type: calculated
+      formula: vendor_contracts.annual_contract_value * vendor_contracts.contract_term_years
+      source_fields:
+      - vendor_contracts.annual_contract_value
+      - vendor_contracts.contract_term_years
+      requires_join: []
+      filter: null
+      value_mapping: null
+      note: Total contract value is derived by multiplying the annual contract value
+        by the contract term in years.
+    annual_value:
+      source: vendor_contracts.annual_contract_value
+      type: direct
+      formula: null
+      source_fields:
+      - vendor_contracts.annual_contract_value
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The canonical annual_value directly corresponds to the annual_contract_value
+        field in vendor_contracts, representing the annual contract value.
+    currency:
+      source: null
+      type: unavailable
+      formula: null
+      source_fields: []
+      requires_join: []
+      filter: null
+      value_mapping: null
+      note: No column in any table stores currency codes; monetary fields like annual_contract_value
+        and line_total lack associated currency information.
+    status:
+      source: null
+      type: calculated
+      formula: CASE WHEN days_until_expiry <= 0 THEN 'Expired' WHEN days_since_start
+        IS NULL THEN 'Pending' ELSE 'Active' END
+      source_fields:
+      - vendor_contracts.days_until_expiry
+      - vendor_contracts.days_since_start
+      requires_join: []
+      filter: null
+      value_mapping: null
+      note: Contract status can be inferred from days_until_expiry and days_since_start;
+        active if ongoing, expired if past end date, pending if not started.
+    contract_type:
+      source: vendor_contracts.contract_type
+      type: direct
+      formula: null
+      source_fields:
+      - vendor_contracts.contract_type
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The contract_type field directly exists in vendor_contracts and represents
+        the type or category of the contract.
+    start_date:
+      source: null
+      type: unavailable
+      formula: null
+      source_fields: []
+      requires_join: []
+      filter: null
+      value_mapping: null
+      note: No column in vendor_contracts or related tables represents the contract
+        start date; only derived fields like days_since_start and days_until_expiry
+        are available.
+    expiry_date:
+      source: null
+      type: calculated
+      formula: DATE('now', '-' || vendor_contracts.days_until_expiry || ' day')
+      source_fields:
+      - vendor_contracts.days_until_expiry
+      requires_join: []
+      filter: null
+      value_mapping: null
+      note: Expiry date can be derived by subtracting days_until_expiry from the current
+        date, since only relative day counts are stored.
+    renewal_date:
+      source: null
+      type: calculated
+      formula: DATE('now', '-' || vendor_contracts.days_since_start || ' days', '+'
+        || (vendor_contracts.days_since_start + vendor_contracts.days_until_expiry)
+        || ' days')
+      source_fields:
+      - vendor_contracts.days_since_start
+      - vendor_contracts.days_until_expiry
+      requires_join: []
+      filter: null
+      value_mapping: null
+      note: Renewal date can be derived by adding days_until_expiry to the contract
+        start date, which is approximated as current_date - days_since_start.
+    auto_renewal:
+      source: vendor_contracts.auto_renew_flag
+      type: direct
+      formula: null
+      source_fields:
+      - vendor_contracts.auto_renew_flag
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The auto_renew_flag column in vendor_contracts directly indicates whether
+        a contract automatically renews.
+    term_length:
+      source: null
+      type: calculated
+      formula: vendor_contracts.contract_term_years * 12
+      source_fields:
+      - vendor_contracts.contract_term_years
+      requires_join: []
+      filter: null
+      value_mapping: null
+      note: Contract term is stored in years; multiply by 12 to convert to months.
+    payment_terms:
+      source: vendor_contracts.payment_terms
+      type: direct
+      formula: null
+      source_fields:
+      - vendor_contracts.payment_terms
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The payment_terms field directly exists in vendor_contracts and represents
+        the contract's payment terms.
+    region:
+      source: vendors.country_code
+      type: direct
+      formula: null
+      source_fields:
+      - vendors.country_code
+      requires_join:
+      - vendors
+      filter: null
+      value_mapping: null
+      note: Region can be derived from the vendor's country_code, which indicates
+        the geographic territory associated with the vendor.
+    created_date:
+      source: null
+      type: unavailable
+      formula: null
+      source_fields: []
+      requires_join: []
+      filter: null
+      value_mapping: null
+      note: No column in vendor_contracts or related tables stores the contract creation
+        date; only derived duration fields (days_since_start, days_until_expiry) are
+        present.
+    modified_date:
+      source: null
+      type: unavailable
+      formula: null
+      source_fields: []
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: No column in any table captures the contract's last modification date;
+        schema lacks timestamp or audit fields.
+tables:
+  vendors:
+    primary_key: vendor_id
+    description: Table with 5 columns
+    foreign_keys: {}
+    row_count_estimate: 60
+  sqlite_sequence:
+    primary_key: null
+    description: Table with 2 columns
+    foreign_keys: {}
+    row_count_estimate: 2
+  vendor_contracts:
+    primary_key: contract_num
+    description: Table with 9 columns
+    foreign_keys:
+      vendor_id: vendors.vendor_id
+    row_count_estimate: 300
+  contract_line_items:
+    primary_key: line_id
+    description: Table with 6 columns
+    foreign_keys:
+      contract_num: vendor_contracts.contract_num
+    row_count_estimate: 1821
+joins:
+- name: vendor_contracts_to_vendors
+  from_table: vendor_contracts
+  to_table: vendors
+  join_type: INNER
+  on_condition: vendor_contracts.vendor_id = vendors.vendor_id
+  note: Foreign key relationship from vendor_contracts.vendor_id to vendors.vendor_id
+- name: contract_line_items_to_vendor_contracts
+  from_table: contract_line_items
+  to_table: vendor_contracts
+  join_type: INNER
+  on_condition: contract_line_items.contract_num = vendor_contracts.contract_num
+  note: Foreign key relationship from contract_line_items.contract_num to vendor_contracts.contract_num
+supported_queries: null
+query_limitations: null
+validation:
+  required_tables:
+  - vendors
+  - sqlite_sequence
+  - vendor_contracts
+  - contract_line_items
+  required_fields:
+    vendors:
+    - vendor_id
+    - vendor_name
+    vendor_contracts:
+    - contract_num
+    - vendor_id
+    contract_line_items:
+    - line_id
+    - contract_num
+  data_quality_checks: []
+  referential_integrity:
+  - vendor_contracts.vendor_id -> vendors.vendor_id
+  - contract_line_items.contract_num -> vendor_contracts.contract_num

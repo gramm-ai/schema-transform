@@ -1,0 +1,227 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "webAppName": {
+      "type": "string",
+      "defaultValue": "schema-translator",
+      "metadata": {
+        "description": "Name of the Azure Web App"
+      }
+    },
+    "sqlServerName": {
+      "type": "string",
+      "defaultValue": "schema-translator-sql",
+      "metadata": {
+        "description": "Name of the Azure SQL Server"
+      }
+    },
+    "sqlAdminUsername": {
+      "type": "string",
+      "defaultValue": "sqladmin",
+      "metadata": {
+        "description": "SQL Server admin username"
+      }
+    },
+    "sqlAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "SQL Server admin password"
+      }
+    },
+    "openAiApiKey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Azure OpenAI API Key"
+      }
+    },
+    "openAiEndpoint": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure OpenAI Endpoint URL"
+      }
+    },
+    "openAiDeploymentName": {
+      "type": "string",
+      "defaultValue": "gpt-4",
+      "metadata": {
+        "description": "Azure OpenAI Deployment Name"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources"
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "B1",
+      "metadata": {
+        "description": "The SKU of App Service Plan"
+      }
+    }
+  },
+  "variables": {
+    "appServicePlanName": "[concat(parameters('webAppName'), '-plan')]",
+    "customerDatabases": [
+      "customer_a_db",
+      "customer_b_db", 
+      "customer_c_db",
+      "customer_d_db",
+      "schema_registry_db"
+    ]
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Sql/servers",
+      "apiVersion": "2021-02-01-preview",
+      "name": "[parameters('sqlServerName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "administratorLogin": "[parameters('sqlAdminUsername')]",
+        "administratorLoginPassword": "[parameters('sqlAdminPassword')]",
+        "version": "12.0"
+      },
+      "resources": [
+        {
+          "type": "firewallRules",
+          "apiVersion": "2021-02-01-preview",
+          "name": "AllowAllAzureIPs",
+          "location": "[parameters('location')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+          ],
+          "properties": {
+            "startIpAddress": "0.0.0.0",
+            "endIpAddress": "0.0.0.0"
+          }
+        }
+      ]
+    },
+    {
+      "type": "Microsoft.Sql/servers/databases",
+      "apiVersion": "2021-02-01-preview",
+      "name": "[concat(parameters('sqlServerName'), '/', variables('customerDatabases')[copyIndex()])]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+      ],
+      "sku": {
+        "name": "Basic",
+        "tier": "Basic",
+        "capacity": 5
+      },
+      "properties": {
+        "collation": "SQL_Latin1_General_CP1_CI_AS",
+        "maxSizeBytes": 2147483648
+      },
+      "copy": {
+        "name": "databaseCopy",
+        "count": "[length(variables('customerDatabases'))]"
+      }
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2021-02-01",
+      "name": "[variables('appServicePlanName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "[parameters('sku')]"
+      },
+      "kind": "linux",
+      "properties": {
+        "reserved": true
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2021-02-01",
+      "name": "[parameters('webAppName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+      ],
+      "kind": "app,linux",
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "siteConfig": {
+          "linuxFxVersion": "PYTHON|3.9",
+          "appCommandLine": "startup.sh",
+          "alwaysOn": true,
+          "appSettings": [
+            {
+              "name": "AZURE_OPENAI_API_KEY",
+              "value": "[parameters('openAiApiKey')]"
+            },
+            {
+              "name": "AZURE_OPENAI_ENDPOINT",
+              "value": "[parameters('openAiEndpoint')]"
+            },
+            {
+              "name": "AZURE_OPENAI_DEPLOYMENT_NAME",
+              "value": "[parameters('openAiDeploymentName')]"
+            },
+            {
+              "name": "AZURE_SQL_SERVER",
+              "value": "[parameters('sqlServerName')]"
+            },
+            {
+              "name": "AZURE_SQL_USERNAME",
+              "value": "[parameters('sqlAdminUsername')]"
+            },
+            {
+              "name": "AZURE_SQL_PASSWORD",
+              "value": "[parameters('sqlAdminPassword')]"
+            },
+            {
+              "name": "WEBSITE_RUN_FROM_PACKAGE",
+              "value": "1"
+            },
+            {
+              "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
+              "value": "true"
+            }
+          ],
+          "cors": {
+            "allowedOrigins": [
+              "*"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/config",
+      "apiVersion": "2021-02-01",
+      "name": "[concat(parameters('webAppName'), '/web')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('webAppName'))]"
+      ],
+      "properties": {
+        "pythonVersion": "3.9",
+        "appCommandLine": "cd /home/site/wwwroot && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"
+      }
+    }
+  ],
+  "outputs": {
+    "webAppUrl": {
+      "type": "string",
+      "value": "[concat('https://', parameters('webAppName'), '.azurewebsites.net')]"
+    },
+    "sqlServerFqdn": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))).fullyQualifiedDomainName]"
+    },
+    "apiEndpoint": {
+      "type": "string",
+      "value": "[concat('https://', parameters('webAppName'), '.azurewebsites.net/')]"
+    },
+    "chatbotUrl": {
+      "type": "string",
+      "value": "[concat('https://', parameters('webAppName'), '.azurewebsites.net/static/index.html')]"
+    }
+  }
+}

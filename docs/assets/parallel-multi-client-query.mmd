@@ -1,0 +1,40 @@
+%%{init: {'theme':'dark', 'themeVariables': {'primaryBgColor':'#1a1a1a', 'primaryTextColor':'#ffffff', 'primaryBorderColor':'#d2691e'}}}%%
+
+flowchart LR
+    QUERY["User Query:<br/>'Show active contracts'"]
+    
+    subgraph Parallel["🔄 Parallel Processing (asyncio)"]
+        direction TB
+        
+        subgraph Client_A["Client A"]
+            PROMPT_A["Build Prompt<br/>+ Client A Schema"] --> LLM_A["LLM Call<br/>~500ms"] --> SQL_A["SQL for Client A"]
+        end
+        
+        subgraph Client_B["Client B"]
+            PROMPT_B["Build Prompt<br/>+ Client B Schema"] --> LLM_B["LLM Call<br/>~500ms"] --> SQL_B["SQL for Client B"]
+        end
+        
+        subgraph Client_C["Client C"]
+            PROMPT_C["Build Prompt<br/>+ Client C Schema"] --> LLM_C["LLM Call<br/>~500ms"] --> SQL_C["SQL for Client C"]
+        end
+        
+        subgraph Client_D["Client D"]
+            PROMPT_D["Build Prompt<br/>+ Client D Schema"] --> LLM_D["LLM Call<br/>~500ms"] --> SQL_D["SQL for Client D"]
+        end
+    end
+    
+    AGGREGATE["Aggregate Results<br/>────────────────<br/>Total: 147 contracts<br/>• Client A: 42 contracts<br/>• Client B: 38 contracts<br/>• Client C: 35 contracts<br/>• Client D: 32 contracts"]
+    
+    QUERY --> Client_A
+    QUERY --> Client_B
+    QUERY --> Client_C
+    QUERY --> Client_D
+    
+    SQL_A --> AGGREGATE
+    SQL_B --> AGGREGATE
+    SQL_C --> AGGREGATE
+    SQL_D --> AGGREGATE
+    
+    classDef clientStyle fill:#1a3a52,stroke:#3a7ca5,stroke-width:2px,color:#fff
+    class Client_A,Client_B,Client_C,Client_D clientStyle
+

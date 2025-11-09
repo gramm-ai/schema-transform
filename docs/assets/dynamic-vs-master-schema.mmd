@@ -1,0 +1,34 @@
+%%{init: {'theme':'dark', 'themeVariables': {'primaryBgColor':'#1a1a1a', 'primaryTextColor':'#ffffff', 'primaryBorderColor':'#d2691e', 'lineColor':'#d2691e', 'fontSize':'14px'}}}%%
+
+flowchart LR
+    subgraph Dynamic["❌ Dynamic Generation Approach"]
+        direction TB
+        D_CLIENTS_1["Clients A, B, C, D"] --> D_GEN_1["Generate Schema v1<br/>────────────────<br/>20 fields"]
+        D_GEN_1 --> D_MAP_1["Generate Mappings<br/>A, B, C, D"]
+        D_MAP_1 --> D_QUERIES_1["Queries Work ✓"]
+        
+        D_NEW["Add Client E"] --> D_GEN_2["Regenerate Schema v2<br/>────────────────<br/>25 fields (changed!)"]
+        D_GEN_2 --> D_MAP_2["Regenerate ALL Mappings<br/>A, B, C, D, E"]
+        D_MAP_2 --> D_BREAK["Old Queries Break ❌<br/>Schema drift ❌"]
+    end
+    
+    subgraph Master["✅ Master Schema Approach"]
+        direction TB
+        M_MASTER["Master Schema<br/>────────────────<br/>56 fields<br/>(comprehensive, stable)"]
+        
+        M_MAP_1["Create Mappings<br/>────────────────<br/>A, B, C, D<br/>(unavailable fields OK)"]
+        
+        M_NEW["Add Client E"] --> M_MAP_2["Create Mapping E<br/>────────────────<br/>(only new client)"]
+        
+        M_MASTER --> M_MAP_1
+        M_MASTER --> M_MAP_2
+        M_MAP_1 --> M_WORK["All Queries Work ✓"]
+        M_MAP_2 --> M_STABLE["Schema Stable ✓<br/>No regeneration ✓"]
+    end
+    
+    classDef dynamicStyle fill:#5e2c2c,stroke:#c55a5a,stroke-width:2px,color:#fff
+    classDef masterStyle fill:#2d5016,stroke:#4a8b2c,stroke-width:2px,color:#fff
+    
+    class D_CLIENTS_1,D_GEN_1,D_MAP_1,D_QUERIES_1,D_NEW,D_GEN_2,D_MAP_2,D_BREAK dynamicStyle
+    class M_MASTER,M_MAP_1,M_NEW,M_MAP_2,M_WORK,M_STABLE masterStyle
+

@@ -1,0 +1,39 @@
+%%{init: {'theme':'dark', 'themeVariables': {'primaryBgColor':'#1a1a1a', 'primaryTextColor':'#ffffff', 'primaryBorderColor':'#d2691e', 'lineColor':'#d2691e', 'fontSize':'14px'}}}%%
+
+flowchart TB
+    USER["User Query<br/>────────────────<br/>'Show all active contracts<br/>with value over 500k'"]
+    
+    ONTOLOGY["FIBO Ontology<br/>────────────────<br/>Formal semantic foundation<br/>for all business concepts"]
+    
+    MASTER["Master Canonical Schema<br/>────────────────<br/>Comprehensive, stable, FIBO-grounded<br/>Covers all enterprise entities"]
+    
+    MAPPINGS["Client Mappings<br/>────────────────<br/>Client A, B, C, D mappings<br/>Define field translations"]
+    
+    LLM["LLM Service<br/>────────────────<br/>Translates queries to SQL<br/>using schema context"]
+    
+    DATABASES["Client Databases<br/>────────────────<br/>Diverse schemas, structures,<br/>terminologies"]
+    
+    RESULTS["Aggregated Results<br/>────────────────<br/>Unified response across<br/>all clients"]
+    
+    ONTOLOGY -.->|"Provides semantic<br/>foundation"| MASTER
+    
+    USER -->|"Natural language<br/>query"| LLM
+    MASTER -->|"Schema context"| LLM
+    MAPPINGS -->|"Translation rules"| LLM
+    
+    LLM -->|"Generated SQL<br/>(per client)"| DATABASES
+    
+    DATABASES -->|"Query results"| RESULTS
+    
+    classDef userStyle fill:#2d5016,stroke:#4a8b2c,stroke-width:3px,color:#fff
+    classDef semanticStyle fill:#4a2c5e,stroke:#8b5a9e,stroke-width:3px,color:#fff
+    classDef llmStyle fill:#5a4a2c,stroke:#d4a574,stroke-width:3px,color:#fff
+    classDef dataStyle fill:#1a3a52,stroke:#3a7ca5,stroke-width:2px,color:#fff
+    classDef resultStyle fill:#2d5016,stroke:#4a8b2c,stroke-width:3px,color:#fff
+    
+    class USER userStyle
+    class ONTOLOGY,MASTER semanticStyle
+    class LLM llmStyle
+    class MAPPINGS,DATABASES dataStyle
+    class RESULTS resultStyle
+

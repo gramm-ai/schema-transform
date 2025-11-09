@@ -1,0 +1,235 @@
+# Schema Mapping: client_a → Canonical
+# Auto-generated with LLM assistance
+# Generated: 20251106_103154
+# Last updated: 2025-11-06
+
+metadata:
+  client_id: client_a
+  database: data/databases/client_a.db
+  description: Auto-generated mapping for client_a
+  schema_complexity: medium
+  last_validated: '2025-11-06'
+canonical_mappings:
+  contract:
+    id:
+      source: contracts.contract_id
+      type: direct
+      formula: null
+      source_fields: null
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The canonical 'id' corresponds directly to the primary key 'contract_id'
+        in the contracts table, which uniquely identifies each contract.
+    name:
+      source: contracts.contract_number
+      type: direct
+      formula: null
+      source_fields:
+      - contracts.contract_number
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The canonical 'name' field corresponds to the contract's identifying title,
+        which is stored as 'contract_number' in the client's schema.
+    contract_number:
+      source: contracts.contract_number
+      type: direct
+      formula: null
+      source_fields:
+      - contracts.contract_number
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The canonical field 'contract_number' directly maps to the 'contract_number'
+        column in the contracts table, which stores the human-readable contract identifier.
+    customer:
+      source: contracts.customer_name
+      type: direct
+      formula: null
+      source_fields:
+      - contracts.customer_name
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The canonical 'customer' corresponds directly to the 'customer_name' field,
+        which stores the legal entity party to the contract.
+    customer_id:
+      source: null
+      type: unavailable
+      formula: null
+      source_fields: null
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The schema stores only customer_name and customer_email but no unique
+        customer identifier; customer_id is not present or derivable.
+    total_value:
+      source: contracts.contract_value
+      type: direct
+      formula: null
+      source_fields:
+      - contracts.contract_value
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The total_value represents the full contract value over its lifetime,
+        which directly corresponds to contracts.contract_value.
+    annual_value:
+      source: contracts.annual_value
+      type: direct
+      formula: null
+      source_fields: null
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The contracts table includes an 'annual_value' column that directly represents
+        the annual recurring or contract value.
+    currency:
+      source: null
+      type: unavailable
+      formula: null
+      source_fields: null
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: No column in the contracts table stores currency information; monetary
+        fields lack associated currency codes.
+    status:
+      source: contracts.status
+      type: direct
+      formula: null
+      source_fields: null
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The canonical 'status' field directly maps to the 'status' column in the
+        contracts table, which stores the contract's lifecycle state.
+    contract_type:
+      source: null
+      type: unavailable
+      formula: null
+      source_fields: null
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The schema does not include any column indicating the contract type or
+        category; no field can be mapped to contract_type.
+    start_date:
+      source: contracts.start_date
+      type: direct
+      formula: null
+      source_fields: null
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The canonical start_date directly maps to contracts.start_date, which
+        represents the contract's effective date.
+    expiry_date:
+      source: contracts.expiry_date
+      type: direct
+      formula: null
+      source_fields: null
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The contracts table includes an expiry_date column that directly represents
+        the contract termination date.
+    renewal_date:
+      source: contracts.renewal_date
+      type: direct
+      formula: null
+      source_fields: null
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The contracts table includes a renewal_date column that directly represents
+        the next renewal date.
+    auto_renewal:
+      source: contracts.auto_renew
+      type: direct
+      formula: null
+      source_fields: null
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The canonical field 'auto_renewal' directly maps to 'contracts.auto_renew',
+        which indicates whether the contract automatically renews.
+    term_length:
+      source: null
+      type: calculated
+      formula: term_years * 12
+      source_fields:
+      - contracts.term_years
+      requires_join: []
+      filter: null
+      value_mapping: null
+      note: term_length in months is derived by multiplying term_years by 12.
+    payment_terms:
+      source: null
+      type: unavailable
+      formula: null
+      source_fields: null
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The contracts table does not contain any column related to payment terms
+        or conditions, and no other table provides this information.
+    region:
+      source: contracts.region
+      type: direct
+      formula: null
+      source_fields: null
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The canonical 'region' field directly maps to the 'region' column in the
+        contracts table, which stores the geographic region or territory.
+    created_date:
+      source: contracts.created_at
+      type: direct
+      formula: null
+      source_fields:
+      - contracts.created_at
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The created_date corresponds directly to contracts.created_at, which stores
+        the timestamp when the contract record was created.
+    modified_date:
+      source: contracts.updated_at
+      type: direct
+      formula: null
+      source_fields:
+      - contracts.updated_at
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The 'updated_at' column records when the contract record was last modified,
+        matching the canonical 'modified_date' field.
+tables:
+  contracts:
+    primary_key: contract_id
+    description: Table with 16 columns
+    foreign_keys: {}
+    row_count_estimate: 500
+  sqlite_sequence:
+    primary_key: null
+    description: Table with 2 columns
+    foreign_keys: {}
+    row_count_estimate: 1
+joins: []
+supported_queries: null
+query_limitations: null
+validation:
+  required_tables:
+  - contracts
+  - sqlite_sequence
+  required_fields:
+    contracts:
+    - contract_id
+    - contract_number
+    - customer_name
+    - contract_value
+  data_quality_checks: []
+  referential_integrity: []

@@ -1,0 +1,35 @@
+%%{init: {'theme':'dark', 'themeVariables': {'primaryBgColor':'#1a1a1a', 'primaryTextColor':'#ffffff', 'primaryBorderColor':'#d2691e', 'lineColor':'#d2691e', 'fontSize':'14px'}}}%%
+
+flowchart TB
+    subgraph MasterSchema["🏛️ Master Schema (Stable)"]
+        FIBO["FIBO Ontology<br/>────────────────<br/>Financial Industry<br/>Business Ontology"]
+        
+        MASTER["Master Canonical Schema<br/>────────────────<br/>✓ contract (56 fields)<br/>✓ customer (20 fields)<br/>✓ invoice (23 fields)<br/>✓ product (18 fields)<br/>✓ sla (14 fields)<br/>✓ compliance (12 fields)<br/>✓ 15+ entities total<br/><br/>Comprehensive & Stable"]
+        
+        FIBO -->|"Semantic<br/>Foundation"| MASTER
+    end
+    
+    subgraph ClientMappings["🗺️ Client-Specific Mappings"]
+        MAP_A["Client A Mapping<br/>────────────────<br/>contract.id → contracts.id<br/>contract.customer → contracts.customer_name<br/>contract.total_value → contracts.contract_value<br/>contract.payment_terms → unavailable"]
+        
+        MAP_B["Client B Mapping<br/>────────────────<br/>contract.id → contract_headers.id<br/>contract.customer → accounts.company_name (join)<br/>contract.total_value → arr × term (calculated)<br/>contract.payment_terms → contract_terms.payment_terms"]
+        
+        MAP_E["Client E Mapping<br/>────────────────<br/>contract.id → agreements.agreement_id<br/>contract.customer → agreements.client_name<br/>contract.total_value → unavailable<br/>contract.payment_terms → agreements.terms"]
+    end
+    
+    MASTER -->|"Map to<br/>Client A"| MAP_A
+    MASTER -->|"Map to<br/>Client B"| MAP_B
+    MASTER -->|"Map to<br/>Client E"| MAP_E
+    
+    MAP_A -->|"Generate SQL"| DB_A["Client A Database"]
+    MAP_B -->|"Generate SQL"| DB_B["Client B Database"]
+    MAP_E -->|"Generate SQL"| DB_E["Client E Database"]
+    
+    classDef masterStyle fill:#2d5016,stroke:#4a8b2c,stroke-width:3px,color:#fff
+    classDef mappingStyle fill:#1a3a52,stroke:#3a7ca5,stroke-width:2px,color:#fff
+    classDef dbStyle fill:#5e2c2c,stroke:#c55a5a,stroke-width:2px,color:#fff
+    
+    class FIBO,MASTER masterStyle
+    class MAP_A,MAP_B,MAP_E mappingStyle
+    class DB_A,DB_B,DB_E dbStyle
+

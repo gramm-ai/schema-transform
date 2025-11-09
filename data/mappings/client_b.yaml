@@ -1,0 +1,308 @@
+# Schema Mapping: client_b → Canonical
+# Auto-generated with LLM assistance
+# Generated: 20251106_103254
+# Last updated: 2025-11-06
+
+metadata:
+  client_id: client_b
+  database: data/databases/client_b.db
+  description: Auto-generated mapping for client_b
+  schema_complexity: high
+  last_validated: '2025-11-06'
+canonical_mappings:
+  contract:
+    id:
+      source: contract_headers.id
+      type: direct
+      formula: null
+      source_fields:
+      - contract_headers.id
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The canonical contract identifier maps directly to the primary key 'id'
+        in the contract_headers table, which uniquely identifies each contract.
+    name:
+      source: contract_headers.contract_number
+      type: direct
+      formula: null
+      source_fields:
+      - contract_headers.contract_number
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The contract name or title is best represented by the contract_number
+        field, which uniquely identifies each contract.
+    contract_number:
+      source: contract_headers.contract_number
+      type: direct
+      formula: null
+      source_fields:
+      - contract_headers.contract_number
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The contract_number field directly corresponds to the canonical contract
+        identifier and is stored in contract_headers.contract_number.
+    customer:
+      source: contract_accounts.company_name
+      type: join
+      formula: null
+      source_fields:
+      - contract_accounts.company_name
+      requires_join:
+      - contract_accounts
+      filter: null
+      value_mapping: null
+      note: The customer (legal entity) corresponds to the company name in contract_accounts,
+        joined via contract_headers.account_id = contract_accounts.account_id.
+    customer_id:
+      source: contract_accounts.account_id
+      type: join
+      formula: null
+      source_fields:
+      - contract_accounts.account_id
+      requires_join:
+      - contract_accounts
+      filter: null
+      value_mapping: null
+      note: The canonical customer_id corresponds to the account identifier in contract_accounts,
+        which represents the customer entity.
+    total_value:
+      source: null
+      type: calculated
+      formula: (contract_financial_terms.annual_recurring_revenue * contract_financial_terms.term_months
+        / 12)
+      source_fields:
+      - contract_financial_terms.annual_recurring_revenue
+      - contract_financial_terms.term_months
+      requires_join:
+      - contract_financial_terms
+      filter: null
+      value_mapping: null
+      note: Total contract value is derived by multiplying annual recurring revenue
+        by the contract term in years.
+    annual_value:
+      source: contract_financial_terms.annual_recurring_revenue
+      type: direct
+      formula: null
+      source_fields:
+      - contract_financial_terms.annual_recurring_revenue
+      requires_join:
+      - contract_financial_terms
+      filter: null
+      value_mapping: null
+      note: The annual_value corresponds directly to the annual_recurring_revenue
+        field in contract_financial_terms, representing the annual contract value.
+    currency:
+      source: contract_financial_terms.currency_code
+      type: direct
+      formula: null
+      source_fields:
+      - contract_financial_terms.currency_code
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: Currency code is stored directly in contract_financial_terms.currency_code,
+        representing the monetary currency for contract values.
+    status:
+      source: contract_headers.status
+      type: direct
+      formula: null
+      source_fields:
+      - contract_headers.status
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The contract lifecycle status is stored directly in contract_headers.status,
+        matching the canonical definition.
+    contract_type:
+      source: null
+      type: unavailable
+      formula: null
+      source_fields: []
+      requires_join: []
+      filter: null
+      value_mapping: null
+      note: No column in any table indicates the contract type or category; schema
+        only includes contract number, status, and financial terms.
+    start_date:
+      source: null
+      type: unavailable
+      formula: null
+      source_fields: []
+      requires_join: []
+      filter: null
+      value_mapping: null
+      note: No column in the schema represents the contract's effective or start date;
+        only created_date and renewal_date exist, which are not equivalent.
+    expiry_date:
+      source: null
+      type: calculated
+      formula: DATE(contract_headers.created_date, '+' || contract_financial_terms.term_months
+        || ' months')
+      source_fields:
+      - contract_headers.created_date
+      - contract_financial_terms.term_months
+      requires_join:
+      - contract_financial_terms
+      filter: null
+      value_mapping: null
+      note: Expiry date is derived by adding the contract term length (in months)
+        to the contract creation date.
+    renewal_date:
+      source: contract_renewal_history.renewal_date
+      type: join
+      formula: null
+      source_fields:
+      - contract_renewal_history.renewal_date
+      requires_join:
+      - contract_renewal_history
+      filter: null
+      value_mapping: null
+      note: The renewal_date field is stored in contract_renewal_history and linked
+        to contracts via contract_id.
+    auto_renewal:
+      source: null
+      type: unavailable
+      formula: null
+      source_fields: null
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: No column in any table indicates whether a contract automatically renews;
+        renewal_history only tracks past renewals, not auto-renewal settings.
+    term_length:
+      source: contract_financial_terms.term_months
+      type: direct
+      formula: null
+      source_fields:
+      - contract_financial_terms.term_months
+      requires_join:
+      - contract_financial_terms
+      filter: null
+      value_mapping: null
+      note: The contract term length in months is directly stored in contract_financial_terms.term_months.
+    payment_terms:
+      source: contract_financial_terms.payment_frequency
+      type: direct
+      formula: null
+      source_fields:
+      - contract_financial_terms.payment_frequency
+      requires_join:
+      - contract_financial_terms
+      filter: null
+      value_mapping: null
+      note: Mapped to payment_frequency, which represents how payments are scheduled
+        (e.g., Annually), aligning with payment terms.
+    region:
+      source: contract_accounts.region
+      type: direct
+      formula: null
+      source_fields:
+      - contract_accounts.region
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The region field directly exists in contract_accounts and represents the
+        geographic region or territory.
+    created_date:
+      source: contract_headers.created_date
+      type: direct
+      formula: null
+      source_fields:
+      - contract_headers.created_date
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The contract creation date directly corresponds to contract_headers.created_date,
+        which stores when the contract record was created.
+    modified_date:
+      source: null
+      type: calculated
+      formula: COALESCE(MAX(contract_renewal_history.created_at), contract_headers.created_date)
+      source_fields:
+      - contract_headers.created_date
+      - contract_renewal_history.created_at
+      requires_join:
+      - contract_renewal_history
+      filter: null
+      value_mapping: null
+      note: Uses the latest renewal record's created_at as the last modification date;
+        falls back to contract_headers.created_date if no renewals exist.
+tables:
+  contract_accounts:
+    primary_key: account_id
+    description: Table with 6 columns
+    foreign_keys: {}
+    row_count_estimate: 100
+  sqlite_sequence:
+    primary_key: null
+    description: Table with 2 columns
+    foreign_keys: {}
+    row_count_estimate: 4
+  contract_headers:
+    primary_key: id
+    description: Table with 5 columns
+    foreign_keys:
+      account_id: contract_accounts.account_id
+    row_count_estimate: 400
+  contract_financial_terms:
+    primary_key: term_id
+    description: Table with 7 columns
+    foreign_keys:
+      contract_id: contract_headers.id
+    row_count_estimate: 400
+  contract_renewal_history:
+    primary_key: id
+    description: Table with 6 columns
+    foreign_keys:
+      contract_id: contract_headers.id
+    row_count_estimate: 574
+joins:
+- name: contract_headers_to_contract_accounts
+  from_table: contract_headers
+  to_table: contract_accounts
+  join_type: INNER
+  on_condition: contract_headers.account_id = contract_accounts.account_id
+  note: Foreign key relationship from contract_headers.account_id to contract_accounts.account_id
+- name: contract_financial_terms_to_contract_headers
+  from_table: contract_financial_terms
+  to_table: contract_headers
+  join_type: INNER
+  on_condition: contract_financial_terms.contract_id = contract_headers.id
+  note: Foreign key relationship from contract_financial_terms.contract_id to contract_headers.id
+- name: contract_renewal_history_to_contract_headers
+  from_table: contract_renewal_history
+  to_table: contract_headers
+  join_type: INNER
+  on_condition: contract_renewal_history.contract_id = contract_headers.id
+  note: Foreign key relationship from contract_renewal_history.contract_id to contract_headers.id
+supported_queries: null
+query_limitations: null
+validation:
+  required_tables:
+  - contract_accounts
+  - sqlite_sequence
+  - contract_headers
+  - contract_financial_terms
+  - contract_renewal_history
+  required_fields:
+    contract_accounts:
+    - account_id
+    - company_name
+    contract_headers:
+    - id
+    - contract_number
+    - account_id
+    contract_financial_terms:
+    - term_id
+    - contract_id
+    contract_renewal_history:
+    - id
+    - contract_id
+  data_quality_checks: []
+  referential_integrity:
+  - contract_headers.account_id -> contract_accounts.account_id
+  - contract_financial_terms.contract_id -> contract_headers.id
+  - contract_renewal_history.contract_id -> contract_headers.id

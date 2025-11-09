@@ -1,0 +1,63 @@
+# Node / JS
+node_modules/
+dist/
+build/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# General env files (ignore real secrets)
+.env
+*.secret
+*.key
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+venv/
+env/
+ENV/
+.envrc
+*.egg-info/
+.eggs/
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Logs
+logs/
+*.log
+
+# Build artifacts
+*.class
+*.exe
+*.dll
+*.so
+*.dylib
+
+# IDE-specific
+*.iml
+
+# Database files (for demo, you may want to include sample DBs)
+# Uncomment if you don't want to push demo databases:
+# *.db
+# *.sqlite
+# *.sqlite3
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~

@@ -1,0 +1,283 @@
+# Schema Mapping: client_c → Canonical
+# Auto-generated with LLM assistance
+# Generated: 20251106_103254
+# Last updated: 2025-11-06
+
+metadata:
+  client_id: client_c
+  database: data/databases/client_c.db
+  description: Auto-generated mapping for client_c
+  schema_complexity: high
+  last_validated: '2025-11-06'
+canonical_mappings:
+  contract:
+    id:
+      source: agreements.agreement_id
+      type: direct
+      formula: null
+      source_fields:
+      - agreements.agreement_id
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The canonical contract identifier maps directly to agreements.agreement_id,
+        which uniquely identifies each contract record.
+    name:
+      source: agreements.agreement_type
+      type: direct
+      formula: null
+      source_fields:
+      - agreements.agreement_type
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The contract name or title corresponds to the agreement_type field in
+        the agreements table, which describes the type or name of the contract (e.g.,
+        'NDA').
+    contract_number:
+      source: agreements.matter_number
+      type: direct
+      formula: null
+      source_fields:
+      - agreements.matter_number
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The canonical contract_number corresponds to agreements.matter_number,
+        which serves as the human-readable identifier for each contract.
+    customer:
+      source: clients.client_name
+      type: join
+      formula: null
+      source_fields:
+      - clients.client_name
+      requires_join:
+      - clients
+      filter: null
+      value_mapping: null
+      note: The 'customer' corresponds to the legal entity linked to an agreement
+        via client_id; use clients.client_name as the customer name.
+    customer_id:
+      source: clients.client_id
+      type: direct
+      formula: null
+      source_fields:
+      - clients.client_id
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The canonical customer_id corresponds directly to clients.client_id, which
+        uniquely identifies each customer entity.
+    total_value:
+      source: agreements.total_fees
+      type: direct
+      formula: null
+      source_fields:
+      - agreements.total_fees
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The total_value corresponds directly to agreements.total_fees, which represents
+        the total monetary value of the contract.
+    annual_value:
+      source: null
+      type: calculated
+      formula: agreements.total_fees / (strftime('%Y', agreements.termination_date)
+        - strftime('%Y', agreements.effective_date) + 1)
+      source_fields:
+      - agreements.total_fees
+      - agreements.effective_date
+      - agreements.termination_date
+      requires_join: []
+      filter: null
+      value_mapping: null
+      note: Annual value can be estimated by dividing total_fees by the contract duration
+        in years based on effective and termination dates.
+    currency:
+      source: null
+      type: unavailable
+      formula: null
+      source_fields: []
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: No column in any table stores currency information; monetary fields (total_fees,
+        retainer_amount, amount_due, amount_paid) lack currency context.
+    status:
+      source: agreements.status
+      type: direct
+      formula: null
+      source_fields:
+      - agreements.status
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The contract lifecycle status is directly stored in agreements.status,
+        matching the canonical definition.
+    contract_type:
+      source: agreements.agreement_type
+      type: direct
+      formula: null
+      source_fields:
+      - agreements.agreement_type
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The contract_type corresponds directly to the agreement_type field in
+        the agreements table, which indicates the type or category of the contract.
+    start_date:
+      source: agreements.effective_date
+      type: direct
+      formula: null
+      source_fields:
+      - agreements.effective_date
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The start_date corresponds directly to the agreements.effective_date field,
+        which represents when the contract becomes effective.
+    expiry_date:
+      source: agreements.termination_date
+      type: direct
+      formula: null
+      source_fields:
+      - agreements.termination_date
+      requires_join: null
+      filter: null
+      value_mapping: null
+      note: The expiry_date corresponds directly to the termination_date in the agreements
+        table, which represents when the contract ends.
+    renewal_date:
+      source: null
+      type: unavailable
+      formula: null
+      source_fields: []
+      requires_join: []
+      filter: null
+      value_mapping: null
+      note: No column in the schema represents a renewal or next renewal date; only
+        effective and termination dates are available.
+    auto_renewal:
+      source: null
+      type: unavailable
+      formula: null
+      source_fields: []
+      requires_join: []
+      filter: null
+      value_mapping: null
+      note: No column in agreements or related tables indicates whether a contract
+        auto-renews; this attribute is not captured in the current schema.
+    term_length:
+      source: null
+      type: calculated
+      formula: ROUND((JULIANDAY(agreements.termination_date) - JULIANDAY(agreements.effective_date))
+        / 30.44, 0)
+      source_fields:
+      - agreements.effective_date
+      - agreements.termination_date
+      requires_join: []
+      filter: null
+      value_mapping: null
+      note: Calculated as the number of months between effective_date and termination_date
+        in the agreements table.
+    payment_terms:
+      source: null
+      type: unavailable
+      formula: null
+      source_fields: []
+      requires_join: []
+      filter: null
+      value_mapping: null
+      note: No column in any table captures payment terms or conditions; schema only
+        includes financial amounts and dates.
+    region:
+      source: clients.jurisdiction
+      type: direct
+      formula: null
+      source_fields:
+      - clients.jurisdiction
+      requires_join: []
+      filter: null
+      value_mapping: null
+      note: The client's 'jurisdiction' field represents the geographic region or
+        territory associated with the client, aligning with the canonical 'region'
+        concept.
+    created_date:
+      source: null
+      type: unavailable
+      formula: null
+      source_fields: []
+      requires_join: []
+      filter: null
+      value_mapping: null
+      note: No column in the client's schema captures the creation date of a contract
+        or agreement; only effective_date and termination_date are present.
+    modified_date:
+      source: null
+      type: unavailable
+      formula: null
+      source_fields: []
+      requires_join: []
+      filter: null
+      value_mapping: null
+      note: No column in any table tracks the last modification date of a contract;
+        only effective and termination dates are present.
+tables:
+  clients:
+    primary_key: client_id
+    description: Table with 5 columns
+    foreign_keys: {}
+    row_count_estimate: 80
+  sqlite_sequence:
+    primary_key: null
+    description: Table with 2 columns
+    foreign_keys: {}
+    row_count_estimate: 3
+  agreements:
+    primary_key: agreement_id
+    description: Table with 9 columns
+    foreign_keys:
+      client_id: clients.client_id
+    row_count_estimate: 350
+  billing_schedules:
+    primary_key: schedule_id
+    description: Table with 6 columns
+    foreign_keys:
+      agreement_id: agreements.agreement_id
+    row_count_estimate: 2856
+joins:
+- name: agreements_to_clients
+  from_table: agreements
+  to_table: clients
+  join_type: INNER
+  on_condition: agreements.client_id = clients.client_id
+  note: Foreign key relationship from agreements.client_id to clients.client_id
+- name: billing_schedules_to_agreements
+  from_table: billing_schedules
+  to_table: agreements
+  join_type: INNER
+  on_condition: billing_schedules.agreement_id = agreements.agreement_id
+  note: Foreign key relationship from billing_schedules.agreement_id to agreements.agreement_id
+supported_queries: null
+query_limitations: null
+validation:
+  required_tables:
+  - clients
+  - sqlite_sequence
+  - agreements
+  - billing_schedules
+  required_fields:
+    clients:
+    - client_id
+    - client_name
+    agreements:
+    - agreement_id
+    - matter_number
+    - client_id
+    billing_schedules:
+    - schedule_id
+    - agreement_id
+  data_quality_checks: []
+  referential_integrity:
+  - agreements.client_id -> clients.client_id
+  - billing_schedules.agreement_id -> agreements.agreement_id
