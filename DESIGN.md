@@ -41,7 +41,7 @@ The system uses **ontology standards** (FIBO) with a **comprehensive master sche
 
 ---
 
-## Challenge 1: Semantic Heterogeneity in Multi-Tenant Systems
+## 1: Semantic Heterogeneity in Multi-Tenant Systems
 
 ### Challenge Description
 
@@ -135,7 +135,7 @@ WHERE status = 'Active'
 
 ---
 
-## Challenge 2: Arbitrary or Ad-hoc Semantic Abstractions
+## 2: Arbitrary or Ad-hoc Semantic Abstractions
 
 ### Challenge Description
 
@@ -247,7 +247,7 @@ The following diagram illustrates the high-level architecture showing how the ma
 
 ---
 
-## Challenge 3: Decoupling Queries from Database Specifics
+## 3: Decoupling Queries from Database Specifics
 
 ### Challenge Description
 
@@ -368,7 +368,7 @@ WHERE total_fees > 500000
 
 ---
 
-## Challenge 4: Managing Diverse Schema Structures
+## 4: Managing Diverse Schema Structures
 
 ### Challenge Description
 
@@ -520,7 +520,7 @@ Only query clients that have this field available
 ## PART III: IMPLEMENTATION
 
 
-## Challenge 5: Making Generated Artifacts Reviewable
+## 5: Making Generated Artifacts Reviewable
 
 ### Challenge Description
 
@@ -617,7 +617,7 @@ joins:
 
 ---
 
-## Challenge 6: Ensuring Mapping Correctness
+## 6: Ensuring Mapping Correctness
 
 ### Challenge Description
 
@@ -814,7 +814,7 @@ Overall: FAILED (5 errors)
 
 ---
 
-## Challenge 7: Consistent LLM Outputs
+## 7: Consistent LLM Outputs
 
 ### Challenge Description
 
@@ -1064,7 +1064,7 @@ async def generate_ontology_mapping(
 
 ---
 
-## Challenge 8: Query Performance at Scale
+## 8: Query Performance at Scale
 
 ### Challenge Description
 
