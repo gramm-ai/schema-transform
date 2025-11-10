@@ -288,7 +288,7 @@ See [DESIGN.md](DESIGN.md) for complete technical analysis.
 
 ## Roadmap
 
-Future enhancements (see [DESIGN.md - Challenge 10](DESIGN.md#challenge-10-next-areas-of-improvements)):
+Future enhancements (see [DESIGN.md - Challenge 10](DESIGN.md#next-areas-of-improvements)):
 
 - [ ] Query-aware prompt optimization (80-90% token reduction)
 - [ ] Capability-based client filtering (pre-filter before LLM calls)
