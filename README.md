@@ -315,24 +315,7 @@ This is a demonstration project showcasing multi-tenant semantic query architect
 
 ## License
 
-This project is provided for demonstration and portfolio purposes.
+This project is provided for demonstration and portfolio purposes under MIT license.
 
 ---
 
-## Contact
-
-**Project Link:** [https://github.com/gramm-ai/schema-transform](https://github.com/gramm-ai/schema-transform)
-
-For questions about implementation details, see [DESIGN.md](DESIGN.md) or open an issue.
-
----
-
-## Acknowledgments
-
-- [FIBO Ontology](https://spec.edmcouncil.org/fibo/) - EDM Council's Financial Industry Business Ontology
-- [FastAPI](https://fastapi.tiangolo.com/) - Modern Python web framework
-- [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service) - LLM infrastructure
-
----
-
-**Built using Python, FastAPI, and Azure OpenAI**
